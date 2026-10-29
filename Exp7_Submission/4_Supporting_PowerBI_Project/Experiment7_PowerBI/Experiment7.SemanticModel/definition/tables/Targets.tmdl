@@ -1,0 +1,59 @@
+table Targets
+	lineageTag: aea46122-b234-5205-beea-0518d4cbd645
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: a50ffc62-080b-5f3e-9126-972324e3c09a
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 81e2b198-8fa1-5fcf-86d2-c78fd543d425
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sales Target'
+		dataType: double
+		formatString: $#,0
+		lineageTag: 69f2562c-f463-51dc-a263-73288b37670c
+		summarizeBy: sum
+		sourceColumn: Sales Target
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Profit Target'
+		dataType: double
+		formatString: $#,0
+		lineageTag: 68be9adb-ebc6-5ba2-b677-f98cbf2de61c
+		summarizeBy: sum
+		sourceColumn: Profit Target
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orders Target'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 935d7ea6-1a0c-5312-807a-e687c5fd7cac
+		summarizeBy: sum
+		sourceColumn: Orders Target
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Targets = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataFolderPath & "Targets.csv"), [Delimiter = ",", Columns = 5, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					ChangedTypes = Table.TransformColumnTypes(Promoted, {{"Year", Int64.Type}, {"Region", type text}, {"Sales Target", type number}, {"Profit Target", type number}, {"Orders Target", Int64.Type}}, "en-US")
+				in
+					ChangedTypes
+
+	annotation PBI_ResultType = Table
+
