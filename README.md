@@ -1,55 +1,73 @@
-# Business Intelligence & Power BI Portfolio
+# Experiment 5 — Power BI Reports
 
-A collection of Power BI experiments built around the Global Superstore dataset. The projects cover report design, business analysis, scorecards, advanced analytics, and reporting operations.
+Power BI practical for relational, multidimensional, comparative, and interactive reporting with the Global Superstore dataset.
 
-> **Dataset note:** The included Global Superstore workbook is attributed in the project documentation to the [Global Superstore dataset on Kaggle](https://www.kaggle.com/datasets/apoorvaappz/global-super-store-dataset). Review its current license and redistribution terms before reusing or redistributing the data.
+## Project contents
 
-## Projects
+- `Experiment5.pbip` — Power BI project entry point.
+- `Experiment5.Report/` — four report pages and the custom theme.
+- `Experiment5.SemanticModel/` — Power Query, model tables, relationships, and DAX measures.
+- `Global_Superstore_2018.xlsx` — source workbook.
 
-| Project | Focus | Main deliverables |
-|---|---|---|
-| [Experiment 5](Experiment5/README.md) | Relational and multidimensional reports, comparisons, interactive dashboard | [Power BI project](Experiment5/Experiment5.pbip) |
-| [Experiment 6](Exp6_Submission/2_PowerBI_Project/Experiment6_PowerBI/README.md) | Executive dashboard and business scorecard | [Power BI project](Exp6_Submission/2_PowerBI_Project/Experiment6_PowerBI/Experiment6.pbip), [lab report (PDF)](Exp6_Submission/1_Lab_Report.pdf) |
-| [Experiment 7](Exp7_Submission/4_Supporting_PowerBI_Project/Experiment7_PowerBI/README.md) | Advanced analytics and recommendations | [Power BI project](Exp7_Submission/4_Supporting_PowerBI_Project/Experiment7_PowerBI/Experiment7.pbip), [business insight report (PDF)](Exp7_Submission/1_Business_Insight_Report.pdf), [executive presentation](Exp7_Submission/2_Executive_Presentation.pptx) |
-| [Experiment 8](Experiment8/output/README.md) | Reporting operations, monitoring, and requirements review | [Power BI project](Experiment8/Experiment8.pbip), [output evidence](Experiment8/output/) |
+## Report pages
 
-### Experiment 6 dashboard preview
+| Page | Purpose |
+|---|---|
+| A. Relational Report | Order-level table with Order ID, customer, product, region, sales, and profit; sorted by sales and filterable by region, category, year, and segment. |
+| B. Multidimensional Report | Matrix with the Region → State → City hierarchy and Sales, Profit, and Quantity measures, plus supporting market and segment visuals. Use the matrix drill controls to expand or collapse levels. |
+| C. Comparative Analysis | Sales by category, profit by region, top 10 customers by sales, and yearly sales/profit trends. |
+| D. Interactive Dashboard | KPI cards, region/category/year slicers, and customer, trend, category, regional-profit, and market visuals. |
 
-![Experiment 6 dashboard preview](Exp6_Submission/Dashboard_Preview.png)
+## Model and report flow
 
-Experiment 7 includes additional supporting visuals in [its output image folder](Exp7_Submission/5_Output_Images/). Experiment 8's output folder contains preview images, monitoring recommendations, and a requirements review.
-
-## Getting started
-
-1. Install a recent version of [Power BI Desktop](https://www.microsoft.com/power-platform/products/power-bi/desktop).
-2. Clone or download this repository and open the relevant `.pbip` file from its project folder.
-3. Configure the workbook path for that project:
-   - **Experiments 6 and 7:** Run `Step1_Set_Data_Path.bat` from the project folder. Alternatively, set the `DataFolderPath` parameter in Power Query to that project's `Data` folder.
-   - **Experiments 5 and 8:** In Power BI Desktop, open **Transform data → Manage Parameters** and update `FilePath` to the included `Global_Superstore_2018.xlsx` workbook.
-4. Refresh the model in Power BI Desktop.
-
-Keep each project folder structure intact when opening or moving a project. Experiments 6 and 7 include a setup script to update their local data path. The other projects use a file-path parameter that may need updating after cloning.
-
-The supplied workbook contains order dates from **2014 through 2017**; the `2018` in its filename does not indicate that the dataset includes 2018 records.
-
-## Repository layout
-
-```text
-Experiment5/       Relational, multidimensional, comparative, and interactive reports
-Exp6_Submission/   Experiment 6 project, lab report, and dashboard preview
-Exp7_Submission/   Experiment 7 project, business report, presentation, and visuals
-Experiment8/       Experiment 8 project and monitoring/operations evidence
+```mermaid
+flowchart LR
+    X[Global_Superstore_2018.xlsx]
+    X --> O[Orders table]
+    X --> P[People table]
+    X --> R[Returns table]
+    C -->|Date| O
+    P -->|Region| O
+    R -. "Order ID matched with TREATAS in measures" .-> O
+    O --> A[Relational report]
+    O --> B[Multidimensional report]
+    O --> Cmp[Comparative analysis]
+    O --> D[Interactive dashboard]
+    C --> B
 ```
 
-## Tools and formats
+The Calendar table is generated from the Orders date range. The Returns table is used by the returned-order measures through `TREATAS`; it is not joined by a physical model relationship.
 
-- **Power BI Desktop** — report authoring and refresh
-- **PBIP, PBIR, and TMDL** — Power BI project, report, and semantic-model formats
-- **Excel and CSV** — source data and scorecard targets
-- **PDF, DOCX, and PPTX** — supporting reports and presentation materials
+## Verified dataset results
 
-## Notes
+The following baseline results were calculated from the included workbook, before report filters:
 
-- Some experiments contain their own copy of the source workbook so each project can be opened independently.
-- Scorecard targets in Experiment 6 are illustrative and can be edited in `Data/Targets.csv`.
-- Static output images are previews; they do not represent proof of a live Power BI Service refresh, schedule, or notification.
+| Measure | Result |
+|---|---:|
+| Order-line rows | 51,290 |
+| Distinct orders | 25,728 |
+| Distinct customer IDs | 17,415 |
+| Total sales | $12,642,501.91 |
+| Total profit | $1,467,457.29 |
+| Profit margin | 11.6% |
+| Total quantity | 178,312 |
+| Order-date range | 2014–2017 |
+
+### Observations
+
+- Sales increased in each year: $2.26M (2014), $2.68M (2015), $3.41M (2016), and $4.30M (2017). Sales grew 26.3% from 2016 to 2017.
+- Technology had the highest category sales (about $4.74M) and profit (about $663.8K).
+- Western Europe had the highest regional sales (about $1.73M) and profit (about $218.4K).
+- Central Asia, Western Africa, and Western Asia had negative total profit, despite positive overall profit.
+- The source has no blank values in the required report fields: Order ID, Order Date, Customer Name, Product Name, Region, Sales, Profit, Quantity, and Category.
+
+Results shown in the report will change when slicers are applied.
+
+## Open and refresh
+
+1. Open `Experiment5.pbip` in Power BI Desktop.
+2. The `FilePath` Power Query parameter currently points to this workstation's copy of `Global_Superstore_2018.xlsx`.
+3. If the project is opened from another location or cloned from GitHub, update `FilePath` in **Transform data → Manage Parameters** to the full path of the included workbook.
+4. Refresh the model and verify that the report pages populate.
+
+The workbook is attributed to the [Global Superstore dataset on Kaggle](https://www.kaggle.com/datasets/apoorvaappz/global-super-store-dataset). Check the dataset's current license and redistribution terms before publishing the workbook in a public repository.

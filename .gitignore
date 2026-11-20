@@ -1,8 +1,2 @@
-# Power BI Desktop local state and cache
-**/.pbi/
-
-# Office temporary/lock files
-~$*
-
-# Temporary files
-*.tmp
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
